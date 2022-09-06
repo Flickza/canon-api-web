@@ -15,9 +15,8 @@
   </head>
   <body>
     <p>Test</p>
-    <button>Take picture</button>
-    <div>
-      <img id="image" src="picture.jpg" alt="Picture" />
+    <button id="capture_image">Take picture</button>
+    <div id="image_container">
     </div>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.5/viewer.min.js"
@@ -30,6 +29,15 @@
   integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
   crossorigin="anonymous"></script>
     <script type="text/javascript">
+        $("#capture_image").click(() => {
+            axios.get('/camera/capture')
+            .then((response) => {
+                $("#image_conatiner").append(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+        })
       const viewer = new Viewer(document.getElementById("image"), {
         inline: true,
         viewed() {
