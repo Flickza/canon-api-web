@@ -15,19 +15,23 @@ var preview_listeners = [];
 
 var camera = undefined;
 
-gphoto.list(function(cameras) {
-  console.log("found " + cameras.length + " cameras");
-  camera = cameras[0];
-  console.log("loading " + camera.model + " settings");
-  return camera.getConfig(function(er, settings) {
-    if (er) {
-      console.error({
-        camera_error: er
+var init_camera = () => {
+    return gphoto.list(function(cameras) {
+        console.log("found " + cameras.length + " cameras");
+        camera = cameras[0];
+        console.log("loading " + camera.model + " settings");
+        return camera.getConfig(function(er, settings) {
+          if (er) {
+            console.error({
+              camera_error: er
+            });
+          }
+          return console.log(settings);
+        });
       });
-    }
-    return console.log(settings);
-  });
-});
+}
+
+init_camera();
 
 //create express app
 const app = express();
@@ -47,7 +51,7 @@ app.use(express.static("./" + 'src'));
 
 //Routes
 app.use('/', homeRoute);
-app.use('/camera', camera, cameraRoute)
+app.use('/camera', cameraRoute)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listening on port ${process.env.PORT}`)
