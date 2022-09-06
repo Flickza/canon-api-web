@@ -16,8 +16,7 @@
   <body>
     <p>Test</p>
     <button id="capture_image">Take picture</button>
-    <div id="image_container">
-    </div>
+    <div id="image_container"></div>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.5/viewer.min.js"
       integrity="sha512-i5q29evO2Z4FHGCO+d5VLrwgre/l+vaud5qsVqQbPXvHmD9obORDrPIGFpP2+ep+HY+z41kAmVFRHqQAjSROmA=="
@@ -25,25 +24,31 @@
       referrerpolicy="no-referrer"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
-  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
-  crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.1.min.js"
+      integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript">
-        $("#capture_image").click(() => {
-            axios.get('/camera/capture')
-            .then((response) => {
-                $("#image_conatiner").append(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        })
-      const viewer = new Viewer(document.getElementById("image"), {
-        inline: true,
-        viewed() {
-          viewer.zoomTo(1);
-        },
+      $("#capture_image").click(() => {
+        axios
+          .get("/camera/capture")
+          .then((response) => {
+            $("#image_conatiner").append(response.data);
+            createViewer();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
+      const createViewer = () => {
+        const viewer = new Viewer(document.getElementById("image"), {
+          inline: true,
+          viewed() {
+            viewer.zoomTo(1);
+          },
+        });
+      };
     </script>
   </body>
 </html>
