@@ -51,7 +51,7 @@ app.use(express.static("./" + 'src'));
 
 //Routes
 app.use('/', homeRoute);
-app.use('/camera', cameraRoute)
+app.use('/camera', init_camera, cameraRoute)
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listening on port ${process.env.PORT}`)
