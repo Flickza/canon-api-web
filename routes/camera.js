@@ -1,5 +1,7 @@
 import express from 'express';
 import gphoto2 from 'gphoto2';
+import fs from 'fs';
+
 const router = express.Router();
 
 var gphoto = new gphoto2.GPhoto2();
