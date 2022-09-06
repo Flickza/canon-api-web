@@ -35,7 +35,7 @@
           .get("/camera/capture")
           .then((response) => {
             console.log(response);
-            // $("#image_conatiner").append(response.data);
+            $("#image_conatiner").append(response.data);
             // createViewer();
           })
           .catch((error) => {
