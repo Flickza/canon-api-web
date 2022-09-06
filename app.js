@@ -1,9 +1,7 @@
 //Server
 import express from 'express';
 import dotenv from 'dotenv';
-import pkg from 'gphoto2';
-const { gphoto2 } = pkg;
-console.log(gphoto2);
+import gphoto2 from 'gphoto2';
 
 //routes
 import homeRoute from './routes/index.js';
