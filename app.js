@@ -10,11 +10,11 @@ import cameraRoute from './routes/camera.js';
 
 var gphoto = new gphoto2.GPhoto2();
 
-requests = {};
+var requests = {};
 
-preview_listeners = [];
+var preview_listeners = [];
 
-camera = undefined;
+var camera = undefined;
 
 gphoto.list(function(cameras) {
   console.log("found " + cameras.length + " cameras");
