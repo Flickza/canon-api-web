@@ -1,4 +1,5 @@
-import { gphoto2 } from "gphoto2";
+import pkg from "gphoto2";
+const { gphoto2 } = pkg;
 
 export const capture = (req, res) => {
     try {
