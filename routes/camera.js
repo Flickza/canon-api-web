@@ -30,7 +30,7 @@ gphoto.list(function (cameras) {
 router.get('/capture', (req, res) => {
     // Take picture with camera object obtained from list()
     camera.takePicture({ download: true }, function (er, data) {
-        fs.writeFileSync(__dirname + '/picture.jpg', data);
+        // fs.writeFileSync(__dirname + '/picture.jpg', data);
         const b64 = Buffer.from(data).toString('base64');
         const mimeType = 'image/jpg';
         res.send(`<img src="data:${mimeType};base64, ${b64}" />`);
