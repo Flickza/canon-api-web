@@ -27,8 +27,8 @@ gphoto.list(function (cameras) {
 router.get('/capture', (req, res) => {
     // Take picture with camera object obtained from list()
     camera.takePicture({ download: true }, function (er, data) {
-        // fs.writeFileSync(__dirname + '/picture.jpg', data);
-        console.log(data);
+        fs.writeFileSync(__dirname + '/picture.jpg', data);
+        // console.log(data);
     });
 
 });
