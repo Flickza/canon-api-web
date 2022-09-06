@@ -1,0 +1,30 @@
+{
+  "name": "canon-api-web",
+  "version": "1.0.0",
+  "description": "A web interface for controlling a canon camera",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flickza/canon-api-web.git"
+  },
+  "keywords": [
+    "canon",
+    "camera",
+    "express",
+    "node",
+    "gphoto2"
+  ],
+  "author": "Adel Johan Holm Gundersen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Flickza/canon-api-web/issues"
+  },
+  "homepage": "https://github.com/Flickza/canon-api-web#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "request": "^2.88.2"
+  }
+}
