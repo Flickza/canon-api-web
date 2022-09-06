@@ -1,33 +1,10 @@
 //Server
 import express from 'express';
 import dotenv from 'dotenv';
-import gphoto2 from 'gphoto2';
 
 //routes
 import homeRoute from './routes/index.js';
 import cameraRoute from './routes/camera.js';
-
-var gphoto = new gphoto2.GPhoto2();
-
-var requests = {};
-
-var preview_listeners = [];
-
-var camera = undefined;
-
-gphoto.list(function (cameras) {
-    console.log("found " + cameras.length + " cameras");
-    camera = cameras[0];
-    console.log("loading " + camera.model + " settings");
-    return camera.getConfig(function (er, settings) {
-        if (er) {
-            console.error({
-                camera_error: er
-            });
-        }
-        return console.log(settings);
-    });
-});
 
 
 //create express app
