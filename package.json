@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/Flickza/canon-api-web#readme",
   "dependencies": {
+    "dotenv": "^16.0.2",
     "express": "^4.18.1",
+    "fs": "0.0.1-security",
     "request": "^2.88.2"
   }
 }
