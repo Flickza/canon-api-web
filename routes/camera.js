@@ -1,15 +1,10 @@
 import express from 'express';
 import gphoto2 from 'gphoto2';
-
-import { capture } from '../controllers/camera.js';
 const router = express.Router();
 
 var gphoto = new gphoto2.GPhoto2();
-
 var requests = {};
-
 var preview_listeners = [];
-
 var camera = undefined;
 
 gphoto.list(function (cameras) {
@@ -28,10 +23,12 @@ gphoto.list(function (cameras) {
 
 //homepage
 router.get('/capture', (req, res) => {
-    // Take picture without downloading immediately
-    camera.takePicture({ download: false }, function (er, path) {
-        console.log(path);
+    // Take picture with camera object obtained from list()
+    camera.takePicture({ download: true }, function (er, data) {
+        fs.writeFileSync(__dirname + '/picture.jpg', data);
+        console.log(data);
     });
+
 });
 
 export default router;
