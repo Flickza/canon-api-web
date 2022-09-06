@@ -5,8 +5,6 @@ import dotenv from 'dotenv';
 //routes
 import homeRoute from './routes/index.js';
 
-
-
 //create express app
 const app = express();
 
