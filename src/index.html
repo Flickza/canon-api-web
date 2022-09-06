@@ -30,28 +30,26 @@
       crossorigin="anonymous"
     ></script>
     <script type="text/javascript">
-      $("#capture_image").click(() => {
+      $("#capture_image").click(async () => {
         axios
           .get("/camera/capture")
           .then((response) => {
-            console.log(response);
-            if (response.data) {
-              $("#image_conatiner").append(response.data);
-              createViewer();
-            }
+                await response;
+                $("#image_conatiner").append(response.data);
+                createViewer();
           })
           .catch((error) => {
             console.log(error);
           });
       });
-      //   const createViewer = () => {
-      //     const viewer = new Viewer(document.getElementById("image"), {
-      //       inline: true,
-      //       viewed() {
-      //         viewer.zoomTo(1);
-      //       },
-      //     });
-      //   };
+        const createViewer = () => {
+          const viewer = new Viewer(document.getElementById("image"), {
+            inline: true,
+            viewed() {
+              viewer.zoomTo(1);
+            },
+          });
+        };
     </script>
   </body>
 </html>
