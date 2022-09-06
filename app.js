@@ -15,23 +15,20 @@ var preview_listeners = [];
 
 var camera = undefined;
 
-var init_camera = () => {
-    return gphoto.list(function(cameras) {
-        console.log("found " + cameras.length + " cameras");
-        camera = cameras[0];
-        console.log("loading " + camera.model + " settings");
-        return camera.getConfig(function(er, settings) {
-          if (er) {
-            console.error({
-              camera_error: er
-            });
-          }
-          return console.log(settings);
+gphoto.list(function(cameras) {
+    console.log("found " + cameras.length + " cameras");
+    camera = cameras[0];
+    console.log("loading " + camera.model + " settings");
+    return camera.getConfig(function(er, settings) {
+        if (er) {
+        console.error({
+            camera_error: er
         });
-      });
-}
+        }
+        return console.log(settings);
+    });
+    });
 
-init_camera();
 
 //create express app
 const app = express();
