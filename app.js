@@ -21,7 +21,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 //set static folder location route
-app.use(express.static("./" + 'src'));
+app.use(express.static("src"));
 
 //Routes
 app.use('/', homeRoute);

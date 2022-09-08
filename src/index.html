@@ -11,12 +11,38 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/index.css" />
     <title>Test</title>
   </head>
   <body>
-    <p>Test</p>
-    <button id="capture_image">Take picture</button>
-    <div id="image_container"></div>
+    <div id="main_container" class="container-fluid">
+      <div class="d-flex flex-row-reverse">
+        <div class="col-1"></div>
+        <div class="left col-2">
+          <div class="row mt-5">
+            <button id="test" class="btn btn-main">Set working directory</button>
+          </div>
+          <div class="row mt-5">
+            <button id="capture_image" class="btn btn-main">Take picture</button>
+          </div>
+          <div class="row mt-5">
+            <button id="download" data-path="null" class="btn btn-main">Download</button>
+          </div>
+        </div>
+        <div class="col-1"></div>
+        <div class="right col-8">
+          <div id="image_container">
+            <img id="image" src="/icons/video-slash.png" alt="" hidden />
+          </div>
+        </div>
+      </div>
+    </div>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.10.5/viewer.min.js"
       integrity="sha512-i5q29evO2Z4FHGCO+d5VLrwgre/l+vaud5qsVqQbPXvHmD9obORDrPIGFpP2+ep+HY+z41kAmVFRHqQAjSROmA=="
@@ -30,26 +56,74 @@
       crossorigin="anonymous"
     ></script>
     <script type="text/javascript">
-      $("#capture_image").click(async () => {
-        axios
-          .get("/camera/capture")
+      const request = async (req) => {
+        return await axios
+          .get(`/camera/${req}`)
           .then((response) => {
-                await response;
-                $("#image_conatiner").append(response.data);
-                createViewer();
+            return response;
           })
           .catch((error) => {
             console.log(error);
           });
+      };
+      $("#capture_image").click(async () => {
+        const response = await request("capture");
+        console.log(response);
+        $("#image_container").html(response.data.img);
+        $("#download").attr("data-path", response.data.path);
+        const viewer = new Viewer(document.getElementById("image"), {
+          inline: true,
+          backdrop: false,
+          focus: true,
+          fullscreen: true,
+          loading: true,
+          keyboard: true,
+          movable: true,
+          navbar: false,
+          rotatable: false,
+          scalabe: false,
+          slideOnTouch: true,
+          title: true,
+          toggleOnDblclick: true,
+          toolbar: false,
+          tooltop: true,
+          transition: true,
+          zoomable: true,
+          zoomOnTouch: true,
+          zoomOnWheel: true,
+          viewed() {
+            viewer.zoomTo(0.2);
+          },
+        });
       });
-        const createViewer = () => {
-          const viewer = new Viewer(document.getElementById("image"), {
-            inline: true,
-            viewed() {
-              viewer.zoomTo(1);
-            },
-          });
-        };
+      $("#download").click(async () => {
+        const path = $("#download").attr("data-path");
+        window.open(`/camera/download?path=${path}`);
+      });
+      const viewer = new Viewer(document.getElementById("image"), {
+        inline: true,
+        backdrop: false,
+        focus: true,
+        fullscreen: true,
+        loading: true,
+        keyboard: true,
+        movable: true,
+        navbar: false,
+        rotatable: false,
+        scalabe: false,
+        slideOnTouch: true,
+        title: true,
+        toggleOnDblclick: true,
+        toolbar: false,
+        tooltop: true,
+        transition: true,
+        zoomable: true,
+        zoomOnTouch: true,
+        zoomOnWheel: true,
+        viewed() {
+          viewer.zoomTo(0.2);
+        },
+      });
     </script>
   </body>
 </html>
