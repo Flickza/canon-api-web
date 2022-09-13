@@ -1,38 +1,20 @@
 import express from 'express';
 import gphoto2 from 'gphoto2';
-import temp from 'temp';
-import fs from 'fs';
-import path from 'path';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
 
 const router = express.Router();
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const __root = "/home/pi/node/canon-api-web";
+dotenv.config();
 
 var gphoto = new gphoto2.GPhoto2();
 var camera = undefined;
 
-temp.track();
-
-const writeTempImage = (binary) => {
-    const path = temp.path({ prefix: 'temp-image', suffix: '.jpg' });
-    fs.writeFileSync(path, binary, (err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("[SUCCESS]")
-        }
-    })
-    return path;
-}
-
-gphoto.list(function (cameras) {
+gphoto.list((cameras) => {
     console.log("found " + cameras.length + " cameras");
     camera = cameras[0];
     console.log("loading " + camera.model + " settings");
-    return camera.getConfig(function (er, settings) {
+    return camera.getConfig((er, settings) => {
         if (er) {
             console.error({ camera_error: er });
         }
@@ -42,13 +24,32 @@ gphoto.list(function (cameras) {
 
 //capture image
 router.get('/capture', (req, res) => {
+    var date = new Date();
+    var prefix = process.env.PREFIX;
+    var identifier = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear() + "-" + new Date().getMilliseconds();
+    var extension = "jpg";
+
+    var imageName = prefix + "_" + identifier + "." + extension;
+    fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
+        if (err) {
+            console.error(err);
+        }
+        console.log("File deleted at " + process.env.LAST_IMAGE_PATH);
+        process.env.LAST_IMAGE_PATH = "none";
+    });
     // Take picture with camera object obtained from list()
-    camera.takePicture({ download: true }, function (er, data) {
+    camera.takePicture({ download: true }, (er, data) => {
         if (data) {
-            const tempPath = writeTempImage(data);
-            const b64 = Buffer.from(data).toString('base64');
-            const mimeType = 'image/jpg';
-            res.send({ img: `<img id="image" src="data:${mimeType};base64, ${b64}" hidden/>`, path: tempPath });
+            const tempPath = path.join(process.cwd() + '/src/pictures/' + imageName);
+            process.env.LAST_IMAGE_PATH = tempPath;
+            fs.writeFileSync(tempPath, data, (err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("[SUCCESS]")
+                }
+            })
+            res.send({ img: `<img id="image" src="/pictures/${imageName}" hidden/>` });
         } else {
             res.sendStatus(500);
         }
@@ -56,24 +57,28 @@ router.get('/capture', (req, res) => {
 });
 //download last taken picture
 router.get('/download', (req, res) => {
-    if (req.query.path != null) {
-        res.download(req.query.path);
-        temp.cleanup((err, stats) => {
-            console.log(stats);
-        })
-    } else {
-        res.sendStatus(404);
-    }
+    res.download(process.env.LAST_IMAGE_PATH, (err) => {
+        if (err) {
+            return res.status(404).send({
+                "STATUS CODE": err.statusCode,
+                "ERROR CODE": err.code,
+                "ERROR MESSAGE": "Image was not found, perhaps already downloaded?"
+            });
+        }
+        console.log("File downloaded at " + process.env.LAST_IMAGE_PATH);
+        fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
+            if (err) {
+                return res.status(404).send({
+                    "STATUS CODE": err.statusCode,
+                    "ERROR CODE": err.code,
+                    "ERROR MESSAGE": "Image was not found, perhaps already downloaded?"
+                });
+            }
+            console.log("File deleted at " + process.env.LAST_IMAGE_PATH);
+            process.env.LAST_IMAGE_PATH = "none";
+        });
+    });
 });
-//delete a file
-// router.delete('/delete/:filename', (req, res) => {
-//     var filename = req.query.filename;
-//     fs.unlink(path, (err) => {
-//         if (err) {
-//             console.error(err)
-//             return
-//         }
-//     });
-// })
+
 
 export default router;

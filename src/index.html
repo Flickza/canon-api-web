@@ -32,11 +32,11 @@
             <button id="capture_image" class="btn btn-main">Take picture</button>
           </div>
           <div class="row mt-5">
-            <button id="download" data-path="null" class="btn btn-main">Download</button>
+            <button id="download" class="btn btn-main">Download</button>
           </div>
         </div>
         <div class="col-1"></div>
-        <div class="right col-8">
+        <div class="right col-8 shadow">
           <div id="image_container">
             <img id="image" src="/icons/video-slash.png" alt="" hidden />
           </div>
@@ -70,7 +70,6 @@
         const response = await request("capture");
         console.log(response);
         $("#image_container").html(response.data.img);
-        $("#download").attr("data-path", response.data.path);
         const viewer = new Viewer(document.getElementById("image"), {
           inline: true,
           backdrop: false,
@@ -80,12 +79,12 @@
           keyboard: true,
           movable: true,
           navbar: false,
-          rotatable: false,
-          scalabe: false,
+          rotatable: true,
+          scalabe: true,
           slideOnTouch: true,
           title: true,
           toggleOnDblclick: true,
-          toolbar: false,
+          toolbar: true,
           tooltop: true,
           transition: true,
           zoomable: true,
@@ -97,8 +96,7 @@
         });
       });
       $("#download").click(async () => {
-        const path = $("#download").attr("data-path");
-        window.open(`/camera/download?path=${path}`);
+        window.open(`/camera/download`);
       });
       const viewer = new Viewer(document.getElementById("image"), {
         inline: true,
