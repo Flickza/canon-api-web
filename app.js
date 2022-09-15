@@ -27,6 +27,9 @@ app.use(express.urlencoded({
 
 //set static folder location route
 app.use(express.static("src"));
+app.use('/scripts',
+    express.static('node_modules/dat.gui/build/'));
+
 
 //Routes
 app.use('/', homeRoute);
