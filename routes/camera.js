@@ -9,7 +9,6 @@ dotenv.config();
 
 var gphoto = new gphoto2.GPhoto2();
 var camera = undefined;
-
 gphoto.list((cameras) => {
     console.log("found " + cameras.length + " cameras");
     camera = cameras[0];
@@ -23,13 +22,13 @@ gphoto.list((cameras) => {
 });
 
 //capture image
-router.get('/capture', (req, res) => {
+router.get('/capture/:prefix', (req, res) => {
     var date = new Date();
-    var prefix = process.env.PREFIX;
-    var identifier = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear() + "-" + new Date().getMilliseconds();
+    var prefix = req.params.prefix;
+    var date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear() + "-" + new Date().getMilliseconds();
     var extension = "jpg";
 
-    var imageName = prefix + "_" + identifier + "." + extension;
+    var imageName = prefix + "_" + date + "." + extension;
     fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
         if (err) {
             console.error(err);
@@ -55,6 +54,7 @@ router.get('/capture', (req, res) => {
         }
     });
 });
+
 //download last taken picture
 router.get('/download', (req, res) => {
     res.download(process.env.LAST_IMAGE_PATH, (err) => {
@@ -76,6 +76,27 @@ router.get('/download', (req, res) => {
             }
             console.log("File deleted at " + process.env.LAST_IMAGE_PATH);
             process.env.LAST_IMAGE_PATH = "none";
+        });
+    });
+});
+
+var socketPath = '/tmp/preview.sock';
+
+router.get('/preview.jpg', function( req, res ) {
+    var previewServer = net.createServer(function ( c ) {
+      res.contentType('image/jpeg');
+      c.on('end', function () {
+        server.close();
+        res.end();
+      });
+      c.pipe(res); // pipes preview stream to HTTP client
+    }); 
+    previewServer.listen(socketPath, function () {
+        camera.takePicture({
+            preview: true,
+            socket: socketPath
+        }, function (er) {
+            console.log(err);
         });
     });
 });

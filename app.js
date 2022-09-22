@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 //routes
 import homeRoute from './routes/index.js';
 import cameraRoute from './routes/camera.js';
+import storageRoute from './routes/storage.js';
 
 
 //create express app
@@ -34,6 +35,7 @@ app.use('/scripts',
 //Routes
 app.use('/', homeRoute);
 app.use('/camera', cameraRoute);
+app.use('/storage', storageRoute);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listening on port ${process.env.PORT}`)
