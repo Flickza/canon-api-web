@@ -29,8 +29,8 @@
     <div id="main_container" class="container-fluid">
       <div class="d-flex flex-row-reverse">
         <div class="col-1"></div>
-        <div class="left col-2 mt-5">
-          <div class="row mt-2">
+        <div class="left col-2 mt-3">
+          <div class="row mt">
             <!-- NY ARKIVSKAPER / VELG ARKIVSKAPER -->
             <section id="creator">
               <div class="row">
@@ -57,7 +57,7 @@
                     Velg arkivskaper:
                   </p>
                   <select id="creatorFolders" class="form-select mb-3">
-                    <option class="form-select" value="loading" selected>
+                    <option class="form-select" value="" selected>
                       Loading...
                     </option>
                   </select>
@@ -90,7 +90,7 @@
                     Velg prosjekt:
                   </p>
                   <select id="projectFolders" class="form-select mb-3">
-                    <option class="form-select" value="1" selected>
+                    <option class="form-select" value="" selected>
                       Loading...
                     </option>
                   </select>
@@ -112,7 +112,11 @@
                   ></p>
                 </div>
                 <div class="col-12 mt-5">
-                  <button id="capture_image" class="btn btn-main w-100">
+                  <button
+                    id="capture_image"
+                    class="btn btn-main w-100"
+                    disabled
+                  >
                     Take picture
                   </button>
                 </div>
@@ -193,7 +197,7 @@
       };
       const saver = (yes_no, creator, project) => {
         axios
-          .get("/camera/save/" + yes_no + "/" +creator + "/" + project)
+          .get("/camera/save/" + yes_no + "/" + creator + "/" + project)
           .then((response) => {
             Swal.fire({
               position: "top-end",
@@ -215,31 +219,39 @@
       };
     </script>
     <script type="text/javascript">
-      $("#prefix").val() === ""
-        ? $("#capture_image").attr("disabled", true)
-        : $("#capture_image").attr("disabled", false);
-      $("#prefix").on("input", () => {
-        $("#prefix").val() === ""
-          ? $("#capture_image").attr("disabled", true)
-          : $("#capture_image").attr("disabled", false);
-        $("#prefixExample").html(
-          $("#creatorFolders").val()+"-"+$("#projectFolders").val()+"-"+$("#prefix").val() +"-DATO-IDENTIFIKATOR.jpg"
-        );
+      var prefix = $("#prefix");
+      var creator = $("#creatorFolders");
+      var project = $("#projectFolders");
+    </script>
+    <script type="text/javascript">
+      prefix.on("input", () => {
+        if (creator.val() === null || project.val() === null || prefix.val() === "") {
+          $("#capture_image").attr("disabled", true)
+          return;
+        }
+          $("#capture_image").attr("disabled", false)
+          $("#prefixExample").html(
+            creator.val() +"-" + project.val() +"-" + prefix.val() +"-DATO-IDENTIFIKATOR.jpg"
+          );
       });
 
       $("#capture_image").click(async () => {
         const response = await request(
           "capture",
-          $("#creatorFolders").val(),
-          $("#projectFolders").val(),
-          $("#prefix").val()
+          creator.val(),
+          project.val(),
+          prefix.val()
         );
         console.log(response);
         if (response) {
           //save image?
           $("#yes_no_wrapper").attr("hidden", false);
           $("#save_yes").click((e) => {
-            saver("yes", $("#creatorFolders").val(), $("#projectFolders").val());
+            saver(
+              "yes",
+              $("#creatorFolders").val(),
+              $("#projectFolders").val()
+            );
             $("#yes_no_wrapper").attr("hidden", true);
           });
           $("#save_no").click((e) => {
@@ -259,6 +271,7 @@
         viewer_options
       );
     </script>
+    <script src="/js/onclose.js"></script>
     <script src="/js/creator.js"></script>
     <script src="/js/project.js"></script>
     <script type="module" src="/js/gui.js"></script>

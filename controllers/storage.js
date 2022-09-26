@@ -21,9 +21,9 @@ export const project = (req, res, next) => {
 };
 
 export const new_project = (req, res, next) => {
-  const dir = req.params.project;
+  const dir = req.params.project.replace(/\W/, "");
   const creator = req.params.creator;
-  const path = process.env.CREATOR_PATH + creator + "/" + dir;
+  const path = process.env.CREATOR_PATH + creator + "/" + dir.toLowerCase();
   try {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
