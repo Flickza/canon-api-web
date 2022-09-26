@@ -223,12 +223,7 @@
           ? $("#capture_image").attr("disabled", true)
           : $("#capture_image").attr("disabled", false);
         $("#prefixExample").html(
-          $("#creatorFolders").val() +
-            "-" +
-            $("#projectFolders").val() +
-            "-" +
-            $("#prefix").val() +
-            "_14-8-2022_#.jpg"
+          $("#creatorFolders").val()+"-"+$("#projectFolders").val()+"-"+$("#prefix").val() +"-DATO-IDENTIFIKATOR.jpg"
         );
       });
 

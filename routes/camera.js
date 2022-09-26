@@ -63,7 +63,6 @@ router.get('/save/:yes_no/:creator/:project', (req, res) => {
     const project = req.params.project;
     const creator = req.params.creator;
     const yes_no = req.params.yes_no;
-    console.log(req.params);
     if (projectExists(creator, project)) {
         if (yes_no === "yes") {
             res.status(200).send({ message: `Picture saved in project ${req.params.project} successfully.` });
@@ -85,7 +84,6 @@ router.get('/save/:yes_no/:creator/:project', (req, res) => {
 });
 
 router.put('/settings/:name', function (req, res) {
-    console.log(req.params.name, req.body);
     if (!camera) {
         return res.status(404).send('Camera not connected');
     } else {

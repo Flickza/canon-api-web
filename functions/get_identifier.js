@@ -6,11 +6,10 @@ dotenv.config();
 export const get_identifier = (creator, project) => {
   return new Promise((resolve, reject) => {
     fs.readdir(process.env.CREATOR_PATH + creator + "/" + project, (err, result) => {
-      console.log(result);
       if (result.length > 0) {
-        var last_identifier = result.at(-1).split("_")[1].split(".")[0];
-        let next_identifier = parseInt(last_identifier) + parseInt(1);
-        return resolve(next_identifier);
+        var numbers = result.map((item) => item.split("_")[1].split(".")[0]);
+        var highest_ID = Math.max(...numbers)
+        return resolve(parseInt(highest_ID) + parseInt(1));
       } else {
         return resolve(1);
       }
