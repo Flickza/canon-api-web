@@ -17,6 +17,11 @@
       integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+
     <link rel="stylesheet" href="/css/index.css" />
     <title>Test</title>
   </head>
@@ -24,41 +29,112 @@
     <div id="main_container" class="container-fluid">
       <div class="d-flex flex-row-reverse">
         <div class="col-1"></div>
-        <div class="left col-2">
-          <div class="row mt-5">
-            <div class="col-6">
-              <p class="text-white" style="padding: 0; margin: 0">
-                Nytt prosjekt:
-              </p>
-              <input type="text" class="form-control" />
-            </div>
-            <div class="col-6">
-              <p class="text-white" style="padding: 0; margin: 0">
-                Velg prosjekt:
-              </p>
-              <select id="projectFolders" class="form-select mb-3">
-                <option class="form-select" value="1" selected>
-                  Loading...
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="row mt-5">
-            <p class="text-white" style="padding: 0; margin: 0">Prefix:</p>
-            <input type="text" id="prefix" class="form-control" />
-            <p class="subtitle text-white" style="padding: 0; margin: 0">
-              "prefix"_14-8-2022_1.jpg
-            </p>
-          </div>
-          <div class="row mt-5">
-            <button id="capture_image" class="btn btn-main">
-              Take picture
-            </button>
-          </div>
-          <div class="row mt-5">
-            <button id="download" class="btn btn-main">Download</button>
+        <div class="left col-2 mt-5">
+          <div class="row mt-2">
+            <!-- NY ARKIVSKAPER / VELG ARKIVSKAPER -->
+            <section id="creator">
+              <div class="row">
+                <div class="col-9 mt-5">
+                  <p class="text-white" style="padding: 0; margin: 0">
+                    Ny arkivskaper:
+                  </p>
+                </div>
+                <div class="col-9">
+                  <input
+                    id="creator_name"
+                    type="text"
+                    class="form-control"
+                    style="width: 100%; height: 100%"
+                  />
+                </div>
+                <div class="col-3">
+                  <button id="new_creator" class="btn btn-main">
+                    <i class="bi bi-plus-circle"></i>
+                  </button>
+                </div>
+                <div class="col-12 mt-5">
+                  <p class="text-white" style="padding: 0; margin: 0">
+                    Velg arkivskaper:
+                  </p>
+                  <select id="creatorFolders" class="form-select mb-3">
+                    <option class="form-select" value="loading" selected>
+                      Loading...
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </section>
+            <!-- NYTT PROSJEKT / VELG PROSJEKT -->
+            <section id="project" hidden>
+              <div class="row">
+                <div class="col-9 mt-5">
+                  <p class="text-white" style="padding: 0; margin: 0">
+                    Nytt prosjekt:
+                  </p>
+                </div>
+                <div class="col-9">
+                  <input
+                    id="project_name"
+                    type="text"
+                    class="form-control"
+                    style="width: 100%; height: 100%"
+                  />
+                </div>
+                <div class="col-3">
+                  <button id="new_project" class="btn btn-main">
+                    <i class="bi bi-plus-circle"></i>
+                  </button>
+                </div>
+                <div class="col-12 mt-5">
+                  <p class="text-white" style="padding: 0; margin: 0">
+                    Velg prosjekt:
+                  </p>
+                  <select id="projectFolders" class="form-select mb-3">
+                    <option class="form-select" value="1" selected>
+                      Loading...
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </section>
+            <!-- CAPTURE IMAGE  -->
+            <section id="capture">
+              <div class="row">
+                <div class="col-12 mt-5">
+                  <p class="text-white" style="padding: 0; margin: 0">
+                    Arkivserie:
+                  </p>
+                  <input type="text" id="prefix" class="form-control" />
+                  <p
+                    id="prefixExample"
+                    class="subtitle text-white"
+                    style="padding: 0; margin: 0"
+                  ></p>
+                </div>
+                <div class="col-12 mt-5">
+                  <button id="capture_image" class="btn btn-main w-100">
+                    Take picture
+                  </button>
+                </div>
+              </div>
+            </section>
+            <!-- SAVE IMAGE? YES / NO -->
+            <section id="yes_no_wrapper" hidden>
+              <div class="row">
+                <div class="col-12 mt-5">
+                  <h2 class="text-white text-center">Save image?</h2>
+                </div>
+                <div class="col-6 mt-1">
+                  <button id="save_yes" class="btn btn-main w-100">Yes</button>
+                </div>
+                <div class="col-6 mt-1">
+                  <button id="save_no" class="btn btn-main w-100">No</button>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
+        <!-- PICTURE VIEWER -->
         <div class="col-1"></div>
         <div class="right col-8 shadow">
           <div id="image_container">
@@ -79,68 +155,9 @@
       integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
       crossorigin="anonymous"
     ></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
-      axios
-        .get("/storage")
-        .then((response) => {
-          var data;
-          response.data.map((item) => {
-            data += `<option class="form-select" value="${item}">${item}</option>`;
-          });
-          $("#projectFolders").html(data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-        $("#prefix").val() === "" ? $("#capture_image").attr("disabled", true) : $("#capture_image").attr("disabled", false);
-        $("#prefix").on("input", () => {
-          $("#prefix").val() === "" ? $("#capture_image").attr("disabled", true) : $("#capture_image").attr("disabled", false);
-        });
-    </script>
-    <script type="text/javascript">
-      const request = async (req, prefix) => {
-        return await axios
-          .get(`/camera/${req}/${prefix}`)
-          .then((response) => {
-            return response;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      };
-      $("#capture_image").click(async () => {
-        const response = await request("capture", $("#prefix").val());
-        console.log(response);
-        $("#image_container").html(response.data.img);
-        const viewer = new Viewer(document.getElementById("image"), {
-          inline: true,
-          backdrop: false,
-          focus: true,
-          fullscreen: true,
-          loading: true,
-          keyboard: true,
-          movable: true,
-          navbar: false,
-          rotatable: true,
-          scalabe: true,
-          slideOnTouch: true,
-          title: true,
-          toggleOnDblclick: true,
-          toolbar: true,
-          tooltop: true,
-          transition: true,
-          zoomable: true,
-          zoomOnTouch: true,
-          zoomOnWheel: true,
-          viewed() {
-            viewer.zoomTo(0.2);
-          },
-        });
-      });
-      $("#download").click(async () => {
-        window.open(`/camera/download`);
-      });
-      const viewer = new Viewer(document.getElementById("image"), {
+      const viewer_options = {
         inline: true,
         backdrop: false,
         focus: true,
@@ -163,96 +180,92 @@
         viewed() {
           viewer.zoomTo(0.2);
         },
-      });
-    </script>
-    <script src="/test/test.ts" type="typescript"></script>
-    <script type="module">
-      import * as dat from "/scripts/dat.gui.module.js";
-      //object containing all GUI elements
-      var foo = {};
-      //object containing all GUI labels property names
-      var settings_name = {};
-      //generate camera settings gui
-      var camera_settings = async () => {
-        //fetch camera settings from settings route
-        var settings = await axios.get("/camera/settings").then((response) => {
-          return response.data.main.children;
-        });
-        //loop over settings for parent labels
-        for (var i in settings) {
-          var parent = settings[i];
-          if (settings[i].type === "section") {
-            //create gui folder
-            var parent = gui.addFolder(parent.label);
-          }
-          //loop over children of parent labels and values
-          for (var x in settings[i].children) {
-            var child = settings[i].children[x];
-            //create gui element in parent folder with child and value
-            if (child.type === "string" || child.type === "date") {
-              foo[child.label] = child.value;
-              settings_name[child.label] = x;
-              parent.add(foo, child.label).onFinishChange(function () {
-                //change setting of camera on change in gui
-                change_setting(
-                  this,
-                  settings_name[this.property],
-                  foo[this.property]
-                );
-              });
-            } else if (child.type === "toggle") {
-              foo[child.label] = child.value;
-              settings_name[child.label] = x;
-              parent.add(foo, child.label, 0, 1, 1).onFinishChange(function () {
-                change_setting(
-                  this,
-                  settings_name[this.property],
-                  foo[this.property]
-                );
-              });
-            } else if (child.type === "choice") {
-              foo[child.label] = child.value;
-              settings_name[child.label] = x;
-              parent
-                .add(foo, child.label, child.choices)
-                .onFinishChange(function () {
-                  change_setting(
-                    this,
-                    settings_name[this.property],
-                    foo[this.property]
-                  );
-                });
-            }
-          }
-        }
       };
-      var change_setting = (t, name, value) => {
-        if (t.isModified()) {
-          t.initialValue = foo[t.property];
-          gui.domElement.style.pointerEvents = "none";
-          gui.domElement.style.opacity = 0.8;
-          axios
-            .put(`/camera/settings/${name}`, { newValue: value })
-            .then((response) => {
-              console.log(response);
-              gui.domElement.style.pointerEvents = "";
-              gui.domElement.style.opacity = 1;
-            })
-            .catch((err) => {
-              if (err) {
-                console.log(err);
-                gui.domElement.style.pointerEvents = "";
-                gui.domElement.style.opacity = 1;
-              }
+      const request = async (req, creator, project, prefix) => {
+        return await axios
+          .get(`/camera/${req}/${creator}/${project}/${prefix}`)
+          .then((response) => {
+            return response;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      };
+      const saver = (yes_no, creator, project) => {
+        axios
+          .get("/camera/save/" + yes_no + "/" +creator + "/" + project)
+          .then((response) => {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: response.data.message,
+              showConfirmButton: false,
+              timer: 1500,
             });
-        }
+          })
+          .catch((error) => {
+            Swal.fire({
+              position: "top-end",
+              icon: "error",
+              title: response.data.error_message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
       };
-
-      var gui = new dat.GUI({
-        closed: true,
-        closeOnTop: true,
-      });
-      await camera_settings();
     </script>
+    <script type="text/javascript">
+      $("#prefix").val() === ""
+        ? $("#capture_image").attr("disabled", true)
+        : $("#capture_image").attr("disabled", false);
+      $("#prefix").on("input", () => {
+        $("#prefix").val() === ""
+          ? $("#capture_image").attr("disabled", true)
+          : $("#capture_image").attr("disabled", false);
+        $("#prefixExample").html(
+          $("#creatorFolders").val() +
+            "-" +
+            $("#projectFolders").val() +
+            "-" +
+            $("#prefix").val() +
+            "_14-8-2022_#.jpg"
+        );
+      });
+
+      $("#capture_image").click(async () => {
+        const response = await request(
+          "capture",
+          $("#creatorFolders").val(),
+          $("#projectFolders").val(),
+          $("#prefix").val()
+        );
+        console.log(response);
+        if (response) {
+          //save image?
+          $("#yes_no_wrapper").attr("hidden", false);
+          $("#save_yes").click((e) => {
+            saver("yes", $("#creatorFolders").val(), $("#projectFolders").val());
+            $("#yes_no_wrapper").attr("hidden", true);
+          });
+          $("#save_no").click((e) => {
+            saver("no", $("#creatorFolders").val(), $("#projectFolders").val());
+            $("#yes_no_wrapper").attr("hidden", true);
+          });
+          $("#image_container").html(response.data.img);
+          const viewer = new Viewer(
+            document.getElementById("image"),
+            viewer_options
+          );
+        }
+      });
+
+      const viewer = new Viewer(
+        document.getElementById("image"),
+        viewer_options
+      );
+    </script>
+    <script src="/js/creator.js"></script>
+    <script src="/js/project.js"></script>
+    <script type="module" src="/js/gui.js"></script>
   </body>
 </html>

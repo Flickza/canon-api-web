@@ -3,6 +3,8 @@ import gphoto2 from 'gphoto2';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { projectExists } from '../functions/check_project.js';
+import { get_identifier } from '../functions/get_identifier.js';
 
 const router = express.Router();
 dotenv.config();
@@ -10,95 +12,76 @@ dotenv.config();
 var gphoto = new gphoto2.GPhoto2();
 var camera = undefined;
 gphoto.list((cameras) => {
-    console.log("found " + cameras.length + " cameras");
+    // console.log("found " + cameras.length + " cameras");
     camera = cameras[0];
-    console.log("loading " + camera.model + " settings");
+    // console.log("loading " + camera.model + " settings");
     return camera.getConfig((er, settings) => {
         if (er) {
             console.error({ camera_error: er });
         }
-        return console.log(settings);
+        return console.log("Camera connected successfully");
     });
 });
 
 //capture image
-router.get('/capture/:prefix', (req, res) => {
-    var date = new Date();
-    var prefix = req.params.prefix;
-    var date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear() + "-" + new Date().getMilliseconds();
-    var extension = "jpg";
+router.get('/capture/:creator/:project/:prefix', async (req, res) => {
+    if (projectExists(req.params.creator, req.params.project)) {
+        var date = new Date();
+        var prefix = req.params.prefix;
+        var creator = req.params.creator;
+        var project = req.params.project;
+        const identifier = await get_identifier(creator, project);
 
-    var imageName = prefix + "_" + date + "." + extension;
-    fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
-        if (err) {
-            console.error(err);
-        }
-        console.log("File deleted at " + process.env.LAST_IMAGE_PATH);
-        process.env.LAST_IMAGE_PATH = "none";
-    });
-    // Take picture with camera object obtained from list()
-    camera.takePicture({ download: true }, (er, data) => {
-        if (data) {
-            const tempPath = path.join(process.cwd() + '/src/pictures/' + imageName);
-            process.env.LAST_IMAGE_PATH = tempPath;
-            fs.writeFileSync(tempPath, data, (err) => {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("[SUCCESS]")
-                }
-            })
-            res.send({ img: `<img id="image" src="/pictures/${imageName}" hidden/>` });
-        } else {
-            res.sendStatus(500);
-        }
-    });
-});
+        var date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+        var extension = "jpg";
 
-//download last taken picture
-router.get('/download', (req, res) => {
-    res.download(process.env.LAST_IMAGE_PATH, (err) => {
-        if (err) {
-            return res.status(404).send({
-                "STATUS CODE": err.statusCode,
-                "ERROR CODE": err.code,
-                "ERROR MESSAGE": "Image was not found, perhaps already downloaded?"
-            });
-        }
-        console.log("File downloaded at " + process.env.LAST_IMAGE_PATH);
-        fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
-            if (err) {
-                return res.status(404).send({
-                    "STATUS CODE": err.statusCode,
-                    "ERROR CODE": err.code,
-                    "ERROR MESSAGE": "Image was not found, perhaps already downloaded?"
-                });
+        var imageName = creator + "-" + project + "-" + prefix + "-" + date + "_" + identifier + "." + extension;
+        // Take picture with camera object obtained from list
+        camera.takePicture({ download: true }, (er, data) => {
+            if (data) {
+                const IMAGE_PATH = path.join(process.env.CREATOR_PATH + creator + '/' + project + "/" + imageName);
+                process.env.LAST_IMAGE_PATH = IMAGE_PATH;
+                fs.writeFileSync(IMAGE_PATH, data, (err) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("[SUCCESS]")
+                    }
+                })
+                res.send({ img: `<img id="image" src="/arkivskaper/${creator}/${project}/${imageName}" hidden/>` });
+            } else {
+                res.sendStatus(500);
             }
-            console.log("File deleted at " + process.env.LAST_IMAGE_PATH);
-            process.env.LAST_IMAGE_PATH = "none";
         });
-    });
+    } else {
+        res.status(404).send({error_message: `Project ${project} does not exist.`});
+    }
 });
 
-var socketPath = '/tmp/preview.sock';
-
-router.get('/preview.jpg', function( req, res ) {
-    var previewServer = net.createServer(function ( c ) {
-      res.contentType('image/jpeg');
-      c.on('end', function () {
-        server.close();
-        res.end();
-      });
-      c.pipe(res); // pipes preview stream to HTTP client
-    }); 
-    previewServer.listen(socketPath, function () {
-        camera.takePicture({
-            preview: true,
-            socket: socketPath
-        }, function (er) {
-            console.log(err);
-        });
-    });
+//Handle last captured image
+router.get('/save/:yes_no/:creator/:project', (req, res) => {
+    const project = req.params.project;
+    const creator = req.params.creator;
+    const yes_no = req.params.yes_no;
+    console.log(req.params);
+    if (projectExists(creator, project)) {
+        if (yes_no === "yes") {
+            res.status(200).send({ message: `Picture saved in project ${req.params.project} successfully.` });
+            process.env.LAST_IMAGE_PATH = "none";
+        } else if (yes_no === "no") {
+            fs.unlink(process.env.LAST_IMAGE_PATH, (err) => {
+                if (err) {
+                    return res.status(404).send({
+                        error_message: "Image was not found, perhaps already deleted?"
+                    });
+                }
+                process.env.LAST_IMAGE_PATH = "none";
+                res.status(200).send({message: `Picture discarded successfully.`})
+            });
+        };
+    } else {
+        return res.status(404).send({error_message: `Project ${req.params.project} was not found.`});
+    }
 });
 
 router.put('/settings/:name', function (req, res) {

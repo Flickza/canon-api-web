@@ -1,24 +1,10 @@
 import express from 'express';
-import fs from 'fs';
-
+import { creators, project, new_project, new_creator } from '../controllers/storage.js';
 const router = express.Router();
 
-router.get('/', function (req, res) {
-    try {
-        var files = fs.readdirSync('/home/pi/node/canon-api-web/src/prosjekt');
-        res.send(files);
-    } catch (err) {
-        res.send(err);
-    }
-});
-
-router.get('/:prosjekt', function (req, res) {
-    try {
-        var files = fs.readdirSync(`/home/pi/node/canon-api-web/src/prosjekt/${req.params.prosjekt}`);
-        res.send(files);
-    } catch (err) {
-        res.send(err);
-    }
-});
+router.get('/creators', creators);
+router.get('/:creator/projects', project);
+router.post('/new/creator/:creator', new_creator);
+router.post('/new/project/:creator/:project', new_project);
 
 export default router;

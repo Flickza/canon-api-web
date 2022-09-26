@@ -96,3 +96,8 @@ body {
   border-image-slice: 1;
   background-color: #3d3d3d;
 }
+
+
+.btn:active {
+  transform: translateY(3px);
+}
