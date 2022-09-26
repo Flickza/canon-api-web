@@ -32,7 +32,7 @@ router.get('/capture/:creator/:project/:prefix', async (req, res) => {
         var project = req.params.project;
         const identifier = await get_identifier(creator, project);
 
-        var date = date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear();
+        var date = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
         var extension = "jpg";
 
         var imageName = creator + "-" + project + "-" + prefix + "-" + date + "_" + identifier + "." + extension;
@@ -45,7 +45,7 @@ router.get('/capture/:creator/:project/:prefix', async (req, res) => {
                     if (err) {
                         console.log(err);
                     } else {
-                        console.log("[SUCCESS]")
+                        console.log("Image captured and saved successfully");
                     }
                 })
                 res.send({ img: `<img id="image" src="/arkivskaper/${creator}/${project}/${imageName}" hidden/>` });

@@ -42,13 +42,21 @@ $("#new_creator").on("click", (e) => {
           icon: "success",
           title: response.data.message,
           showConfirmButton: false,
-          timer: 3000,
+          timerProgressBar: true,
+          timer: 2000,
         });
         fetch_creators();
         $("#creator_name").val("");
       })
       .catch((err) => {
-        console.log(err);
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: err.response.data.message,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          timer: 2000,
+        });
       });
   }
 });

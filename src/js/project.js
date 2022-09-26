@@ -24,11 +24,6 @@ $("#creatorFolders").on("change", (e) => {
   fetch_projects($("#creatorFolders").val());
 });
 
-//replace invalid characters while typing
-$("#project_name").on("input", function (e) {
-  $(this).val($(this).val().replace(/\W/, ""));
-});
-
 //new project handler function
 $("#new_project").on("click", (e) => {
   var project_name = $("#project_name").val();
@@ -45,7 +40,8 @@ $("#new_project").on("click", (e) => {
           icon: "success",
           title: response.data.message,
           showConfirmButton: false,
-          timer: 3000,
+          timerProgressBar: true,
+          timer: 2000,
         });
         fetch_projects($("#creatorFolders").val());
         $("#project_name").val("");
@@ -57,7 +53,8 @@ $("#new_project").on("click", (e) => {
           icon: "error",
           title: err.response.data.message,
           showConfirmButton: false,
-          timer: 3000,
+          timerProgressBar: true,
+          timer: 2000,
         });
       });
   }

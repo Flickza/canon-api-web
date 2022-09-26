@@ -1,3 +1,5 @@
+import { saver } from "/js/saver.js";
+
 $(window).on('beforeunload', function (e) {
     e.preventDefault();
     /* 

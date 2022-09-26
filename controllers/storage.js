@@ -13,7 +13,8 @@ export const creators = (req, res, next) => {
 
 export const project = (req, res, next) => {
   try {
-    var files = fs.readdirSync(process.env.CREATOR_PATH + req.params.creator);
+    const creator = req.params.creator.toUpperCase();
+    var files = fs.readdirSync(process.env.CREATOR_PATH + creator);
     res.send(files);
   } catch (err) {
     res.send(err);
@@ -21,9 +22,9 @@ export const project = (req, res, next) => {
 };
 
 export const new_project = (req, res, next) => {
-  const dir = req.params.project.replace(/\W/, "");
-  const creator = req.params.creator;
-  const path = process.env.CREATOR_PATH + creator + "/" + dir.toLowerCase();
+  const dir = req.params.project.replace(/\W/, "").toUpperCase();
+  const creator = req.params.creator.replace(/\W/, "").toUpperCase();
+  const path = process.env.CREATOR_PATH + creator + "/" + dir;
   try {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
@@ -36,7 +37,7 @@ export const new_project = (req, res, next) => {
   }
 };
 export const new_creator = (req, res, next) => {
-  const creator = req.params.creator;
+  const creator = req.params.creator.replace(/\W/, "").toUpperCase();
   const path = process.env.CREATOR_PATH + creator;
   try {
     if (!fs.existsSync(path)) {
